@@ -10,6 +10,8 @@ public class TestPlayerHealth : MonoBehaviour
     HUDManager hudManager;
     TestPlayerMovement playerMovement;
 
+    public bool isInvincible;
+
     public void OnEnable()
     {
         playerMovement = GameObject.Find("Player").GetComponent<TestPlayerMovement>();
@@ -29,5 +31,21 @@ public class TestPlayerHealth : MonoBehaviour
         }
 
             hudManager.UpdateHealth();
+    }
+
+    public void SubtractHealth(int healthAmount)
+    {
+        if (!isInvincible)
+        {
+            if(health - healthAmount > 0)
+            {
+                health -= healthAmount;
+            }
+            else
+            {
+                healthAmount = 0;
+            }
+            hudManager.UpdateHealth();
+        }
     }
 }

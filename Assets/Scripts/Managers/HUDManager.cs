@@ -21,38 +21,35 @@ public class HUDManager : MonoBehaviour
     public TestPlayerMovement playerMovement;
     public Image[] abilities;
     public Image[] frames;
-    public Sprite doubleJump;
-    public Sprite wallJump;
-    public Sprite dash;
 
     [Header("Powerups")]
     public Image powerupImg;
-    public Image powerupTimerImg;
-    public bool powerupActive;
+    public Sprite invincibilitySpr;
+    public Sprite speedBoostSpr;
+    public Sprite unlimGravityManipSpr;
+
+    public Slider powerupSlider;
+    public float powerupTimer;
+    public bool stopPowerupTimer = false;
 
     public void Start()
     {
         UpdateHealth();
 
-        Debug.Log("Start1: " + abilities[2]);
         for (int i = 0; i < abilities.Length; i++)
         {
             abilities[i].enabled = false;
             abilities[i].transform.parent.GetComponent<Image>().enabled = false;
         }
         
-        Debug.Log("Start2: " + abilities[2]);
         powerupImg.enabled = false;
         powerupImg.transform.parent.GetComponent<Image>().enabled = false;
-
-        Debug.Log("HUD Player Health: " + playerHealth.GetInstanceID());
-        Debug.Log("HUD Player Movement: " + playerMovement.GetInstanceID());
+        powerupSlider.gameObject.SetActive(false);
     }
 
     public void Update()
     {
         UpdateTimer();
-        //UpdateAbilities();
     }
 
     public void UpdateTimer()
@@ -89,7 +86,6 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilities()
     {
-        Debug.Log("UpdateAbilities: " + abilities[2]);
         if (playerMovement.canDoubleJump)
         {
             abilities[0].enabled = true;
@@ -107,8 +103,61 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    public void UpdatePowerup()
+    public void UpdatePowerup(PowerupModifier powerup)
     {
-        
+        powerupImg.enabled = true;
+        powerupImg.transform.parent.GetComponent<Image>().enabled = true;
+        if (powerup as InvincibilityModifier)
+        {
+            powerupImg.sprite = invincibilitySpr;
+        }
+        else if (powerup as SpeedBoostModifier)
+        {
+            powerupImg.sprite = speedBoostSpr;
+        }
+        else if (powerup as UnlimGravityManipModifier)
+        {
+            powerupImg.sprite = unlimGravityManipSpr;
+        }
+
+        powerupTimer = 0;
+        powerupSlider.maxValue = powerup.powerupDeactivateSec;
+        powerupSlider.value = 0;
+        powerupSlider.gameObject.SetActive(true);
+        stopPowerupTimer = false;
+        StartPowerupTimer();
+    }
+
+    public void StartPowerupTimer()
+    {
+        StartCoroutine(UpdatePowerupTimer());
+    }
+
+
+    IEnumerator UpdatePowerupTimer()
+    {
+        while (stopPowerupTimer == false)
+        {
+            powerupTimer += Time.deltaTime;
+            yield return new WaitForSeconds(0.001f);
+
+            if (powerupTimer >= powerupSlider.maxValue)
+            {
+                stopPowerupTimer = true;
+            }
+
+            if (stopPowerupTimer == false)
+            {
+                powerupSlider.value = powerupTimer;
+            }
+        }
+        disablePowerup();
+    }
+
+    public void disablePowerup()
+    {
+        powerupImg.enabled = false;
+        powerupImg.transform.parent.GetComponent<Image>().enabled = false;
+        powerupSlider.gameObject.SetActive(false);
     }
 }

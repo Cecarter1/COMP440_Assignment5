@@ -62,22 +62,25 @@ public class Powerup : MonoBehaviour
     }
 
     void ActivatePowerup(TestPlayerMovement playerController)
-    {
-        playerController.ApplyPowerupModifier(abilityModifier, gameObject);
-        Debug.Log("Running");
+    { 
         var powerupModifier = abilityModifier as PowerupModifier;
-        Debug.Log("ActivatePowerup: " + hudManager.abilities[2]);
-        Debug.Log("Can dash? " + playerController.canDash);
-        Debug.Log("Powerup Player Movement: " + playerController.GetInstanceID());
-        hudManager.UpdateAbilities();
+        Debug.Log(playerController.isPowerupActive);
 
         // Decides whether to destroy or deactivate collectible
         if (powerupModifier != null)
         {
-            gameObject.SetActive(false);
+            if (!playerController.isPowerupActive)
+            {
+                playerController.GetComponent<TestPlayerMovement>().isPowerupActive = true;
+                hudManager.UpdatePowerup(powerupModifier);
+                gameObject.SetActive(false);
+            }
         }
         else
         {
+
+            playerController.ApplyPowerupModifier(abilityModifier, gameObject);
+            hudManager.UpdateAbilities();
             Destroy(gameObject);
         }
     }

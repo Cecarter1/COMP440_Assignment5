@@ -12,10 +12,12 @@ public class TestPlayerMovement : MonoBehaviour
     public bool canWallJump = false;
     public bool canDash = false;
 
+    public bool isPowerupActive = false;
+    public bool hasUnlimitedGravity = false;
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
-        Debug.Log("Player Movement: " + gameObject.GetInstanceID());
     }
 
     private void Update()
@@ -40,5 +42,10 @@ public class TestPlayerMovement : MonoBehaviour
     public void EnableDash()
     {
         canDash = true;
+    }
+
+    public void AddSpeed(int speedValue)
+    {
+        speed += speedValue;
     }
 }
