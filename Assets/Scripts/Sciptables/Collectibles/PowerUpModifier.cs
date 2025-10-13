@@ -6,6 +6,7 @@ public abstract class PowerupModifier : AbilityModifier
 {
     public float powerupDeactivateSec;
     public float powerupRespawnSec;
+
     public abstract void Deactivate(GameObject target);
     public abstract void Respawn(GameObject powerup);
 

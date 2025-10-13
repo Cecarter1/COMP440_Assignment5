@@ -2,50 +2,49 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Powerup : MonoBehaviour
 {
     public AbilityModifier abilityModifier;
+    public HUDManager hudManager;
+    public GameObject player;
 
+    [Header("Powerup Floating")]
     public float speed = 2f;
     public float height = 0.5f;
-
     private Vector2 startPosition;
 
+    [Header("Particle System")]
     public ParticleSystem fire;
     public ParticleSystem explosion;
-    public GameObject player;
+
+    public Gradient powerupParticleGradient;
 
     public void Start()
     {
         startPosition = transform.position;
-        fire = Instantiate(fire, transform.position, Quaternion.Euler(-90, 0, 0));
+        fire = Instantiate(fire, new Vector2(transform.position.x, transform.position.y - 0.6f), Quaternion.Euler(-90, 0, 0));
         explosion = Instantiate(explosion, transform.position, Quaternion.Euler(-90, 0, 0));
+
+        var col = fire.colorOverLifetime;
+        col.color = powerupParticleGradient;
+        col = fire.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().colorOverLifetime;
+        col.color = powerupParticleGradient;
+        col = explosion.colorOverLifetime;
+        col.color = powerupParticleGradient;
     }
 
     public void Update()
     {
-        float newY = startPosition.y + Mathf.Sin(Time.time * speed) * height;
-        transform.position = new Vector2(transform.position.x, newY);
-        fire.transform.position = transform.position;
-
-        if (Math.Pow(player.transform.position.x - transform.position.x, 2) < 25 && !fire.isPlaying)
-        {
-            fire.Play(true);
-        }
-        else if (Math.Pow(player.transform.position.x - transform.position.x, 2) > 25 && fire.isPlaying)
-        {
-            fire.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
-
+        UpdatePowerupPosition();
     }
 
     public void OnEnable()
     {
         fire.gameObject.SetActive(true);
         fire.Play(true);
-        Debug.Log(fire.isPlaying);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -65,8 +64,14 @@ public class Powerup : MonoBehaviour
     void ActivatePowerup(TestPlayerMovement playerController)
     {
         playerController.ApplyPowerupModifier(abilityModifier, gameObject);
+        Debug.Log("Running");
         var powerupModifier = abilityModifier as PowerupModifier;
-        
+        Debug.Log("ActivatePowerup: " + hudManager.abilities[2]);
+        Debug.Log("Can dash? " + playerController.canDash);
+        Debug.Log("Powerup Player Movement: " + playerController.GetInstanceID());
+        hudManager.UpdateAbilities();
+
+        // Decides whether to destroy or deactivate collectible
         if (powerupModifier != null)
         {
             gameObject.SetActive(false);
@@ -75,5 +80,27 @@ public class Powerup : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void UpdatePowerupPosition()
+    {
+        float newY = startPosition.y + Mathf.Sin(Time.time * speed) * height;
+        transform.position = new Vector2(transform.position.x, newY);
+        fire.transform.position = new Vector2(transform.position.x, transform.position.y - 0.6f);
+
+        if (Math.Pow(player.transform.position.x - transform.position.x, 2) < 25 && !fire.isPlaying)
+        {
+            fire.Play(true);
+        }
+        else if (Math.Pow(player.transform.position.x - transform.position.x, 2) > 25 && fire.isPlaying)
+        {
+            fire.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
+    public void OnDestroy()
+    {
+        Destroy(fire);
+        Destroy(explosion);
     }
 }
