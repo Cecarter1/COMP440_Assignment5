@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SpeedBoostPowerup
   m_EditorClassIdentifier: 
   powerupDeactivateSec: 10
-  powerupRespawnSec: 45
+  powerupRespawnSec: 5
   speedValue: 2

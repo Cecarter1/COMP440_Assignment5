@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: UnlimGravityManipPowerup
   m_EditorClassIdentifier: 
   powerupDeactivateSec: 10
-  powerupRespawnSec: 45
+  powerupRespawnSec: 5

@@ -71,6 +71,7 @@ public class Powerup : MonoBehaviour
         {
             if (!playerController.isPowerupActive)
             {
+                playerController.ApplyPowerupModifier(abilityModifier, gameObject);
                 playerController.GetComponent<TestPlayerMovement>().isPowerupActive = true;
                 hudManager.UpdatePowerup(powerupModifier);
                 gameObject.SetActive(false);
@@ -78,7 +79,6 @@ public class Powerup : MonoBehaviour
         }
         else
         {
-
             playerController.ApplyPowerupModifier(abilityModifier, gameObject);
             hudManager.UpdateAbilities();
             Destroy(gameObject);
@@ -104,6 +104,6 @@ public class Powerup : MonoBehaviour
     public void OnDestroy()
     {
         Destroy(fire);
-        Destroy(explosion);
+        //Destroy(explosion);
     }
 }

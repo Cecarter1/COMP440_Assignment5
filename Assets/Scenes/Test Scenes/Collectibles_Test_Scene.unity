@@ -3541,6 +3541,7 @@ MonoBehaviour:
   invincibilitySpr: {fileID: 21300000, guid: 6d0a1a8708dcfd14f8a2aa4e0f2425cb, type: 3}
   speedBoostSpr: {fileID: 21300000, guid: 6ab876caefd5ecb41be2335e44771ef1, type: 3}
   unlimGravityManipSpr: {fileID: 21300000, guid: 1e4d10e38edb80740b17b58fb97197df, type: 3}
+  healthSpr: {fileID: 21300000, guid: 2254e8b7a786e3f43b3936b16f3cdc0f, type: 3}
   powerupSlider: {fileID: 1366607645}
   powerupTimer: 0
   stopPowerupTimer: 0

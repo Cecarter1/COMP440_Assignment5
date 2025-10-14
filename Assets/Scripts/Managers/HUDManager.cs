@@ -27,6 +27,7 @@ public class HUDManager : MonoBehaviour
     public Sprite invincibilitySpr;
     public Sprite speedBoostSpr;
     public Sprite unlimGravityManipSpr;
+    public Sprite healthSpr;
 
     public Slider powerupSlider;
     public float powerupTimer;
@@ -119,8 +120,12 @@ public class HUDManager : MonoBehaviour
         {
             powerupImg.sprite = unlimGravityManipSpr;
         }
+        else
+        {
+            powerupImg.sprite = healthSpr;
+        }
 
-        powerupTimer = 0;
+            powerupTimer = 0;
         powerupSlider.maxValue = powerup.powerupDeactivateSec;
         powerupSlider.value = 0;
         powerupSlider.gameObject.SetActive(true);
