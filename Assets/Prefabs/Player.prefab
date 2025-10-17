@@ -262,7 +262,7 @@ MonoBehaviour:
   targetCamera: {fileID: 0}
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   probeInset: 0.03
   groundCheckDist: 0.16
   wallCheckDist: 0.15
@@ -278,10 +278,16 @@ MonoBehaviour:
   fallGravityMult: 2.8
   jumpCutMultiplier: 0.5
   jumpReleaseGrace: 0.02
+  enableUnlimitedAirJumps: 1
   wallSlideMaxSpeed: 2.5
   wallJumpLateral: 8
   wallJumpVertical: 9
   wallJumpLockTime: 0.12
+  enableDash: 1
+  dashSpeed: 12
+  dashTime: 0.18
+  dashCooldown: 0.35
+  dashClip: {fileID: 0}
   rotationSlerpTime: 0.2
   landSfxCooldown: 0.15
   slideSfxCooldown: 0.25
