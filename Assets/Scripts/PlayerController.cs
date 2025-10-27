@@ -31,10 +31,14 @@ public class PlayerController : MonoBehaviour
 
     // ===== Collision / Contacts =====
     [Header("Collision")]
-    public LayerMask groundMask = ~0;
+    public LayerMask groundMask = ~0;   // used for BOTH ground and walls
     public float probeInset = 0.03f;
     public float groundCheckDist = 0.16f;
     public float wallCheckDist = 0.22f;
+
+    [Header("Wall Detection Options")]
+    [Tooltip("If true, you must hold into the wall to start sliding.")]
+    public bool requireInputIntoWall = true;
 
     // ===== Movement =====
     [Header("Movement")]
@@ -70,6 +74,8 @@ public class PlayerController : MonoBehaviour
     public float wallJumpLateral = 8f;
     public float wallJumpVertical = 12f;
     public float wallJumpLockTime = 0.12f;
+    [Tooltip("Small time window to ignore tiny re-contacts so corners don't stick.")]
+    public float wallDetachGrace = 0.06f; // hysteresis
 
     // ===== Dash =====
     [Header("Dash")]
@@ -112,6 +118,9 @@ public class PlayerController : MonoBehaviour
 
     float lastLandTime = -999f;
     float lastSlideSfx = -999f;
+
+    // Hysteresis timestamps for wall contact
+    float lastLeftWallTime = -999f, lastRightWallTime = -999f;
 
     int facing = 1; // +1 right, -1 left
 
@@ -275,13 +284,44 @@ public class PlayerController : MonoBehaviour
         bool wasGrounded = grounded;
         grounded = g0 || g1 || g2;
         if (grounded) lastGroundedTime = Time.time;
-        if (grounded != wasGrounded) OnGroundedChanged?.Invoke(grounded);
 
-        // wall rays (left/right)
+        if (grounded != wasGrounded)
+        {
+            OnGroundedChanged?.Invoke(grounded);
+            if (grounded && !wasGrounded)
+            {
+                // landing edge → FORCE clear wall state & wall memory (fix sticky wall-slide)
+                wallLeft = wallRight = false;
+                lastLeftWallTime = lastRightWallTime = -999f;
+                animator?.SetBool(AnimIsWallSliding, false);
+                TryLandSfx();
+            }
+        }
+
+        // wall rays (left/right) — use GROUND MASK (since you don't have climbableMask)
         Vector2 midLeft = center - right * (ext.x - probeInset);
         Vector2 midRight = center + right * (ext.x - probeInset);
-        wallLeft = Physics2D.Raycast(midLeft, -right, wallCheckDist, groundMask);
-        wallRight = Physics2D.Raycast(midRight, right, wallCheckDist, groundMask);
+
+        bool hitLeft = Physics2D.Raycast(midLeft, -right, wallCheckDist, groundMask);
+        bool hitRight = Physics2D.Raycast(midRight, right, wallCheckDist, groundMask);
+
+        // hysteresis times
+        if (hitLeft) lastLeftWallTime = Time.time;
+        if (hitRight) lastRightWallTime = Time.time;
+
+        // grace-based contact flags
+        wallLeft = (Time.time - lastLeftWallTime) < wallDetachGrace;
+        wallRight = (Time.time - lastRightWallTime) < wallDetachGrace;
+
+        // Ground beats wall contact
+        if (grounded) { wallLeft = wallRight = false; }
+
+        // DEBUG (optional): uncomment to see rays
+        // Debug.DrawRay(baseCenter, down * groundCheckDist, Color.green);
+        // Debug.DrawRay(baseLeft,  down * groundCheckDist, Color.green);
+        // Debug.DrawRay(baseRight, down * groundCheckDist, Color.green);
+        // Debug.DrawRay(midLeft,  -right * wallCheckDist, wallLeft ? Color.yellow : Color.cyan);
+        // Debug.DrawRay(midRight,  right * wallCheckDist, wallRight ? Color.yellow : Color.cyan);
     }
 
     bool IsWallSliding()
@@ -290,11 +330,14 @@ public class PlayerController : MonoBehaviour
 
         bool touching = wallLeft || wallRight;
         bool movingDown = Vector2.Dot(rb.velocity, gravityDir) > 0.01f;
+
         bool movingToward =
             (wallLeft && Vector2.Dot(moveInput, -rightAxis) > 0f) ||
             (wallRight && Vector2.Dot(moveInput, rightAxis) > 0f);
 
-        return touching && movingDown && movingToward;
+        bool inputOk = requireInputIntoWall ? movingToward : true;
+
+        return touching && movingDown && inputOk;
     }
 
     // ---------- Movement ----------
@@ -384,8 +427,8 @@ public class PlayerController : MonoBehaviour
         if (rising && !JumpHeld() && !jumpCutApplied && (Time.time - lastJumpTime) > jumpReleaseGrace)
         {
             float maxUp = (jumpSpeed * jumpMult) * jumpCutMultiplier;
-            float vUpClamped = Mathf.Min(vUp, maxUp);
             float vRight = Vector2.Dot(rb.velocity, rightAxis);
+            float vUpClamped = Mathf.Min(vUp, maxUp);
             rb.velocity = vRight * rightAxis + vUpClamped * upAxis;
             jumpCutApplied = true;
         }
@@ -512,7 +555,7 @@ public class PlayerController : MonoBehaviour
         float vAlongUp = Vector2.Dot(rb.velocity, upAxis);
         animator.SetFloat(AnimSpeed, speedAlongRight);
         animator.SetBool(AnimIsGrounded, grounded);
-        animator.SetBool(AnimIsWallSliding, IsWallSliding());
+        animator.SetBool(AnimIsWallSliding, grounded ? false : IsWallSliding());
         animator.SetFloat(AnimVAlongUp, vAlongUp);
     }
 
