@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
@@ -278,7 +278,7 @@ public class PlayerController : MonoBehaviour
         Vector2 baseRight = baseCenter + right * (ext.x * 0.7f);
 
         bool g0 = Physics2D.Raycast(baseCenter, down, groundCheckDist, groundMask);
-        bool g1 = Physics2D.Raycast(baseLeft, down, groundCheckDist, groundMask);
+        bool g1 = Physics2D.Raycast(baseLeft,  down, groundCheckDist, groundMask);
         bool g2 = Physics2D.Raycast(baseRight, down, groundCheckDist, groundMask);
 
         bool wasGrounded = grounded;
@@ -298,25 +298,25 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // wall rays (left/right) — use GROUND MASK (since you don't have climbableMask)
-        Vector2 midLeft = center - right * (ext.x - probeInset);
+        // wall rays (left/right) — use GROUND MASK (no climbableMask)
+        Vector2 midLeft  = center - right * (ext.x - probeInset);
         Vector2 midRight = center + right * (ext.x - probeInset);
 
-        bool hitLeft = Physics2D.Raycast(midLeft, -right, wallCheckDist, groundMask);
-        bool hitRight = Physics2D.Raycast(midRight, right, wallCheckDist, groundMask);
+        bool hitLeft  = Physics2D.Raycast(midLeft,  -right, wallCheckDist, groundMask);
+        bool hitRight = Physics2D.Raycast(midRight,  right, wallCheckDist, groundMask);
 
         // hysteresis times
-        if (hitLeft) lastLeftWallTime = Time.time;
+        if (hitLeft)  lastLeftWallTime  = Time.time;
         if (hitRight) lastRightWallTime = Time.time;
 
         // grace-based contact flags
-        wallLeft = (Time.time - lastLeftWallTime) < wallDetachGrace;
+        wallLeft  = (Time.time - lastLeftWallTime)  < wallDetachGrace;
         wallRight = (Time.time - lastRightWallTime) < wallDetachGrace;
 
         // Ground beats wall contact
         if (grounded) { wallLeft = wallRight = false; }
 
-        // DEBUG (optional): uncomment to see rays
+        // DEBUG (optional)
         // Debug.DrawRay(baseCenter, down * groundCheckDist, Color.green);
         // Debug.DrawRay(baseLeft,  down * groundCheckDist, Color.green);
         // Debug.DrawRay(baseRight, down * groundCheckDist, Color.green);
@@ -332,8 +332,8 @@ public class PlayerController : MonoBehaviour
         bool movingDown = Vector2.Dot(rb.velocity, gravityDir) > 0.01f;
 
         bool movingToward =
-            (wallLeft && Vector2.Dot(moveInput, -rightAxis) > 0f) ||
-            (wallRight && Vector2.Dot(moveInput, rightAxis) > 0f);
+            (wallLeft  && Vector2.Dot(moveInput, -rightAxis) > 0f) ||
+            (wallRight && Vector2.Dot(moveInput,  rightAxis) > 0f);
 
         bool inputOk = requireInputIntoWall ? movingToward : true;
 
@@ -654,3 +654,5 @@ public class PlayerController : MonoBehaviour
         jumpMult = 1f;
     }
 }
+
+
