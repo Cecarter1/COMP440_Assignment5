@@ -64,6 +64,14 @@ public class PlayerController : MonoBehaviour
     [Header("Gravity")]
     public float rotationSlerpTime = 0.2f;
 
+    // ===== Abilities / Powerups =====
+    [Header("Abilities")]
+    public bool canDoubleJump = false;
+    public bool canWallJump = false;
+    public bool canDash = false;
+    public bool isPowerupActive = false;
+    public bool hasUnlimitedGravity = false;
+
     // ===== SFX =====
     [Header("SFX")]
     public float landSfxCooldown = 0.20f;
@@ -333,15 +341,18 @@ public class PlayerController : MonoBehaviour
         }
 
         // Wall jump
-        bool jumpPressed = (Time.time - lastJumpPressedTime) <= 0.05f;
-        if (jumpPressed)
+        if (canWallJump)
         {
-            lastJumpPressedTime = -999f;
-            Vector2 away = wallLeft ? rightAxis : (wallRight ? -rightAxis : Vector2.zero);
-            Vector2 j = away * wallJumpLateral + upAxis * wallJumpVertical;
-            rb.velocity = j;
-            wallJumpLockUntil = Time.time + wallJumpLockTime;
-            audioManager?.PlayJump();
+            bool jumpPressed = (Time.time - lastJumpPressedTime) <= 0.05f;
+            if (jumpPressed)
+            {
+                lastJumpPressedTime = -999f;
+                Vector2 away = wallLeft ? rightAxis : (wallRight ? -rightAxis : Vector2.zero);
+                Vector2 j = away * wallJumpLateral + upAxis * wallJumpVertical;
+                rb.velocity = j;
+                wallJumpLockUntil = Time.time + wallJumpLockTime;
+                audioManager?.PlayJump();
+            }
         }
     }
 
