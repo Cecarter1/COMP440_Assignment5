@@ -7,9 +7,15 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class PlayerController : MonoBehaviour
+public class NewPlayerController : MonoBehaviour
 {
     // ===== Events for other systems =====
+    public bool canDoubleJump = false;
+    public bool canWallJump = false;
+    public bool canDash = false;
+
+    public bool isPowerupActive = false;
+    public bool hasUnlimitedGravity = false;
     public event Action<bool> OnGroundedChanged;
     public event Action<Transform> OnAttachedToPlatform;
     public event Action OnDetachedFromPlatform;
@@ -25,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public PlayerAudioManager audioManager;
     public Transform graphicsRoot;      // visuals child
     public Camera targetCamera;         // optional: rotate with gravity
+    public PlayerMovement playerMovement;
 
     Rigidbody2D rb;
     Collider2D col;
@@ -387,21 +394,24 @@ public class PlayerController : MonoBehaviour
     {
         if (!enableUnlimitedAirJumps) return;
         if (grounded || isDashing) return;
-
-        bool buffered = (Time.time - lastJumpPressedTime) <= jumpBufferTime;
-        if (buffered)
+        if (canDoubleJump)
         {
-            lastJumpPressedTime = -999f;
+            bool buffered = (Time.time - lastJumpPressedTime) <= jumpBufferTime;
+            if (buffered)
+            {
+                lastJumpPressedTime = -999f;
 
-            float vRight = Vector2.Dot(rb.velocity, rightAxis);
-            rb.velocity = vRight * rightAxis + (jumpSpeed * jumpMult * upAxis);
+                float vRight = Vector2.Dot(rb.velocity, rightAxis);
+                rb.velocity = vRight * rightAxis + (jumpSpeed * jumpMult * upAxis);
 
-            lastJumpTime = Time.time;
-            jumpCutApplied = false;
+                lastJumpTime = Time.time;
+                jumpCutApplied = false;
 
-            audioManager?.PlayJump();
-            OnJumpPerformed?.Invoke(rb.velocity, JumpKind.Air);
+                audioManager?.PlayJump();
+                OnJumpPerformed?.Invoke(rb.velocity, JumpKind.Air);
+            }
         }
+    
     }
 
     // ---------- Variable jump height / better fall ----------
@@ -452,19 +462,23 @@ public class PlayerController : MonoBehaviour
             audioManager?.PlaySlide();
             lastSlideSfx = Time.time;
         }
+        if (canWallJump)
+        {
+       
 
         bool jumpPressed = (Time.time - lastJumpPressedTime) <= 0.05f;
-        if (jumpPressed)
-        {
-            lastJumpPressedTime = -999f;
+            if (jumpPressed)
+            {
+                lastJumpPressedTime = -999f;
 
-            Vector2 away = wallLeft ? rightAxis : (wallRight ? -rightAxis : Vector2.zero);
-            Vector2 j = away * wallJumpLateral + upAxis * (wallJumpVertical * jumpMult);
-            rb.velocity = j;
-            wallJumpLockUntil = Time.time + wallJumpLockTime;
+                Vector2 away = wallLeft ? rightAxis : (wallRight ? -rightAxis : Vector2.zero);
+                Vector2 j = away * wallJumpLateral + upAxis * (wallJumpVertical * jumpMult);
+                rb.velocity = j;
+                wallJumpLockUntil = Time.time + wallJumpLockTime;
 
-            audioManager?.PlayJump();
-            OnJumpPerformed?.Invoke(rb.velocity, JumpKind.Wall);
+                audioManager?.PlayJump();
+                OnJumpPerformed?.Invoke(rb.velocity, JumpKind.Wall);
+            }
         }
     }
 
@@ -474,41 +488,46 @@ public class PlayerController : MonoBehaviour
         if (!enableDash) return;
         if (isDashing) return;
         if (Time.time < nextDashTime) return;
-
-        // Direction cascade: input -> current horiz velocity -> last non-zero input -> facing
-        float sign = 0f;
-
-        // 1) current input
-        if (Mathf.Abs(rawMoveScalar) > 0.05f)
-            sign = Mathf.Sign(rawMoveScalar);
-
-        // 2) horizontal velocity
-        if (Mathf.Abs(sign) < 0.5f)
+        if (canDash)
         {
-            float vRight = Vector2.Dot(rb.velocity, rightAxis);
-            if (Mathf.Abs(vRight) > 0.05f)
-                sign = Mathf.Sign(vRight);
-        }
 
-        // 3) last non-zero input
-        if (Mathf.Abs(sign) < 0.5f)
-            sign = lastMoveSign;
 
-        // 4) facing fallback
-        if (Mathf.Abs(sign) < 0.5f)
-            sign = facing;
 
-        dashDir = (sign > 0f ? rightAxis : -rightAxis);
+            // Direction cascade: input -> current horiz velocity -> last non-zero input -> facing
+            float sign = 0f;
 
-        isDashing = true;
-        dashEndTime = Time.time + dashTime;
-        nextDashTime = Time.time + dashCooldown;
-        platformVelocity = Vector2.zero;
+            // 1) current input
+            if (Mathf.Abs(rawMoveScalar) > 0.05f)
+                sign = Mathf.Sign(rawMoveScalar);
 
-        if (audioManager && dashClip)
-        {
-            var src = audioManager.GetComponent<AudioSource>();
-            if (src) src.PlayOneShot(dashClip);
+            // 2) horizontal velocity
+            if (Mathf.Abs(sign) < 0.5f)
+            {
+                float vRight = Vector2.Dot(rb.velocity, rightAxis);
+                if (Mathf.Abs(vRight) > 0.05f)
+                    sign = Mathf.Sign(vRight);
+            }
+
+            // 3) last non-zero input
+            if (Mathf.Abs(sign) < 0.5f)
+                sign = lastMoveSign;
+
+            // 4) facing fallback
+            if (Mathf.Abs(sign) < 0.5f)
+                sign = facing;
+
+            dashDir = (sign > 0f ? rightAxis : -rightAxis);
+
+            isDashing = true;
+            dashEndTime = Time.time + dashTime;
+            nextDashTime = Time.time + dashCooldown;
+            platformVelocity = Vector2.zero;
+
+            if (audioManager && dashClip)
+            {
+                var src = audioManager.GetComponent<AudioSource>();
+                if (src) src.PlayOneShot(dashClip);
+            }
         }
     }
 
@@ -600,7 +619,12 @@ public class PlayerController : MonoBehaviour
     {
         newGravityDir = newGravityDir.normalized;
         StopAllCoroutines();
-        StartCoroutine(SmoothReorient(newGravityDir, Mathf.Max(0.01f, rotateDuration)));
+        if (!hasUnlimitedGravity)
+        {
+
+
+            StartCoroutine(SmoothReorient(newGravityDir, Mathf.Max(0.01f, rotateDuration)));
+        }
     }
     IEnumerator SmoothReorient(Vector2 newGravityDir, float duration)
     {
@@ -652,6 +676,20 @@ public class PlayerController : MonoBehaviour
         jumpMult = Mathf.Max(0.01f, multiplier);
         yield return new WaitForSeconds(duration);
         jumpMult = 1f;
+    }
+    public void ApplyPowerupModifier(AbilityModifier abilityModifier, GameObject powerup)
+    {
+        abilityModifier.Activate(gameObject);
+        var powerupModifier = abilityModifier as PowerupModifier;
+
+        if (powerupModifier != null)
+        {
+            StartCoroutine(powerupModifier.StartPowerupCountdown(gameObject, powerup));
+        }
+    }
+    public void AddSpeed(int speedValue)
+    {
+        playerMovement.moveSpeed += speedValue;
     }
 }
 

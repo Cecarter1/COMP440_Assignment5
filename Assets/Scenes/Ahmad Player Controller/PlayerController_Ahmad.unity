@@ -2895,8 +2895,24 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
+      propertyPath: canDash
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
+      propertyPath: canWallJump
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
+      propertyPath: canDoubleJump
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
       propertyPath: wallCheckDist
       value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
+      propertyPath: isPowerupActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
       propertyPath: groundMask.m_Bits
@@ -2905,6 +2921,10 @@ PrefabInstance:
     - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
       propertyPath: wallSlideMaxSpeed
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1685957538886395796, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
+      propertyPath: hasUnlimitedGravity
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3798998932502961599, guid: cfba7a3c7b87d18439e426976a3052d6, type: 3}
       propertyPath: m_LocalPosition.x
