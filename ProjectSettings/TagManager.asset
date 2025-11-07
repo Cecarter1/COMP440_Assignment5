@@ -44,6 +44,9 @@ TagManager:
   - name: SnowBackground
     uniqueID: 270969829
     locked: 0
+  - name: PlainsBackground
+    uniqueID: 2168122179
+    locked: 0
   - name: Player
     uniqueID: 3139578171
     locked: 0
