@@ -1,25 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Powerup/Unlimited Gravity Manip Modifier")]
-public class UnlimGravityManipModifier : PowerupModifier
+[CreateAssetMenu(menuName = "Ability/Unlimited Gravity Manip")]
+public class UnlimGravityManipModifier : AbilityModifier // Changed to AbilityModifier
 {
-    TestPlayerMovement playerMovement;
+    // Caches the correct PlayerController component
+    PlayerController playerController;
+
     public override void Activate(GameObject target)
     {
-        playerMovement = target.GetComponent<TestPlayerMovement>();
-        playerMovement.hasUnlimitedGravity = true;
+        // Get the correct component
+        playerController = target.GetComponent<PlayerController>();
+
+        if (playerController != null)
+        {
+            // Set the correct flag in PlayerController to unlock the feature
+            playerController.hasUnlimitedGravity = true;
+
+            // Optionally, set the main ability flag to true if the PlayerController needs it.
+            // playerController.isPowerupActive = true; 
+        }
     }
 
-    public override void Deactivate(GameObject target)
-    {
-        playerMovement.hasUnlimitedGravity = false;
-        playerMovement.isPowerupActive = false;
-    }
-
-    public override void Respawn(GameObject powerup)
-    {
-        powerup.SetActive(true);
-    }
+    // Deactivate and Respawn are removed, as the ability is PERMANENT.
+    // The player never loses the ability once unlocked.
 }

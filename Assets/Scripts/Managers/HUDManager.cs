@@ -87,23 +87,33 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilities()
     {
+        // Check and display Double Jump
         if (playerMovement.canDoubleJump)
         {
             abilities[0].enabled = true;
             frames[0].enabled = true;
         }
+        // Check and display Wall Jump
         if (playerMovement.canWallJump)
         {
             abilities[1].enabled = true;
             frames[1].enabled = true;
         }
+        // Check and display Dash
         if (playerMovement.canDash)
         {
             abilities[2].enabled = true;
             frames[2].enabled = true;
         }
-    }
 
+        // NEW: Check and display Unlimited Gravity Manip (Assuming it's ability index 3)
+        if (playerMovement.hasUnlimitedGravity)
+        {
+            // Assuming the gravity icon is the next slot (index 3)
+            abilities[3].enabled = true;
+            frames[3].enabled = true;
+        }
+    }
     public void UpdatePowerup(PowerupModifier powerup)
     {
         powerupImg.enabled = true;
@@ -116,10 +126,7 @@ public class HUDManager : MonoBehaviour
         {
             powerupImg.sprite = speedBoostSpr;
         }
-        else if (powerup as UnlimGravityManipModifier)
-        {
-            powerupImg.sprite = unlimGravityManipSpr;
-        }
+ 
         else
         {
             powerupImg.sprite = healthSpr;

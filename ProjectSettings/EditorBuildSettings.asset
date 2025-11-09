@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PlatformScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Levels/CrustLevel.unity
+    guid: 61fc18817e5d4184d805c2ef7e0f7b83
+  - enabled: 1
+    path: Assets/Scenes/Levels/SnowLevel.unity
+    guid: f775f59c877ecfe40a2ac3c82bb39b71
+  - enabled: 1
+    path: Assets/Scenes/Levels/PlainsLevel.unity
+    guid: 73b26dd2397588d479e0c4ac43911694
   m_configObjects: {}

@@ -1,16 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Ability/Dash")]
 public class DashModifier : AbilityModifier
 {
-    TestPlayerMovement playerMovement;
+    // Caches the correct PlayerController component
+    PlayerController playerController;
 
     public override void Activate(GameObject target)
     {
-        playerMovement = target.GetComponent<TestPlayerMovement>();
-        playerMovement.EnableDash();
+        // 1. Get the correct component
+        playerController = target.GetComponent<PlayerController>();
+
+        if (playerController != null)
+        {
+            // 2. Set the public flag in PlayerController to unlock the ability
+            playerController.canDash = true;
+        }
     }
+    // Since this is a permanent unlock (AbilityModifier), no Deactivate is needed.
 }
