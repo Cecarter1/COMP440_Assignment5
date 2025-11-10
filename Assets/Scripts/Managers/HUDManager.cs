@@ -18,7 +18,7 @@ public class HUDManager : MonoBehaviour
     public TMP_Text timerText;
 
     [Header("Abilities")]
-    public TestPlayerMovement playerMovement;
+    public PlayerController playerMovement;
     public Image[] abilities;
     public Image[] frames;
 
@@ -33,9 +33,15 @@ public class HUDManager : MonoBehaviour
     public float powerupTimer;
     public bool stopPowerupTimer = false;
 
+    [Header("Collectible Description")]
+    public GameObject collectiblePane;
+    public Image collectibleImg;
+    public TMP_Text collectibleDescription;
+    public bool descriptionActive = false;
+
     public void Start()
     {
-        UpdateHealth();
+        //UpdateHealth();
 
         for (int i = 0; i < abilities.Length; i++)
         {
@@ -51,6 +57,15 @@ public class HUDManager : MonoBehaviour
     public void Update()
     {
         UpdateTimer();
+
+        if (descriptionActive)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                collectiblePane.SetActive(false);
+                descriptionActive = false;
+            }
+        }
     }
 
     public void UpdateTimer()
@@ -107,7 +122,7 @@ public class HUDManager : MonoBehaviour
         }
 
         // NEW: Check and display Unlimited Gravity Manip (Assuming it's ability index 3)
-        if (playerMovement.hasUnlimitedGravity)
+        if (playerMovement.canGravity)
         {
             // Assuming the gravity icon is the next slot (index 3)
             abilities[3].enabled = true;
@@ -163,13 +178,21 @@ public class HUDManager : MonoBehaviour
                 powerupSlider.value = powerupTimer;
             }
         }
-        disablePowerup();
+        DisablePowerup();
     }
 
-    public void disablePowerup()
+    public void DisablePowerup()
     {
         powerupImg.enabled = false;
         powerupImg.transform.parent.GetComponent<Image>().enabled = false;
         powerupSlider.gameObject.SetActive(false);
+    }
+
+    public void ShowDescription(AbilityModifier collectible)
+    {
+        collectiblePane.SetActive(true);
+        descriptionActive = true;
+        collectibleImg.sprite = collectible.sprite;
+        collectibleDescription.text = collectible.descritption;
     }
 }

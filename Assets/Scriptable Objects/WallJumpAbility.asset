@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afff971783a752546939489f2df525f2, type: 3}
   m_Name: WallJumpAbility
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 0}
-  playerHealth: {fileID: 0}
-  hudManager: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 1a2ee5aa4c70a6c438df349151d3997b, type: 3}
+  abilityName: Wall Jump
+  descritption: Jump while touching a wall.

@@ -6,8 +6,13 @@ using UnityEngine;
 public abstract class AbilityModifier : ScriptableObject
 {
     //public TestPlayerMovement playerMovement;
-   // public TestPlayerHealth playerHealth;
+    // public TestPlayerHealth playerHealth;
     //public HUDManager hudManager;
+
+    public Sprite sprite;
+    public string abilityName;
+    public string descritption;
+
     public abstract void Activate(GameObject target);
 
     //public void OnEnable()

@@ -98,7 +98,7 @@ public class Powerup : MonoBehaviour
                 abilityModifier.Activate(playerController.gameObject);
 
                 playerController.GetComponent<PlayerController>().isPowerupActive = true;
-                // hudManager.UpdatePowerup(powerupModifier);
+                hudManager.UpdatePowerup(powerupModifier);
                 gameObject.SetActive(false);
             }
         }
@@ -107,7 +107,8 @@ public class Powerup : MonoBehaviour
             // Activates the permanent effect
             abilityModifier.Activate(playerController.gameObject);
 
-            // hudManager.UpdateAbilities();
+            hudManager.UpdateAbilities();
+            hudManager.ShowDescription(abilityModifier);
             Destroy(gameObject); // Permanently remove the collectible
         }
     }

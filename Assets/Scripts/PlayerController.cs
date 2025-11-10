@@ -13,8 +13,9 @@ public class PlayerController : MonoBehaviour
     public bool canDoubleJump = false;
     public bool canWallJump = false;
     public bool canDash = false;
+    public bool canGravity = false;// Flag for gravity unlock
     public bool isPowerupActive = false;
-    public bool hasUnlimitedGravity = false; // Flag for gravity unlock
+    public bool hasUnlimitedGravity = false; 
     public bool canFlipGravity = true; // Control gravity flip cooldown
 
     // NOTE: This should be UNCHECKED in the Inspector for single double jump functionality.
@@ -234,7 +235,7 @@ public class PlayerController : MonoBehaviour
     // ---------- Gravity flip (arrows) ----------
     void HandleGravityFlipHotkeys()
     {
-        if (!canFlipGravity || !hasUnlimitedGravity) return; // Must have ability & be off cooldown
+        if (!canFlipGravity || !canGravity) return; // Must have ability & be off cooldown
 
         Vector2 newDir = Vector2.zero;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) newDir = Vector2.left;

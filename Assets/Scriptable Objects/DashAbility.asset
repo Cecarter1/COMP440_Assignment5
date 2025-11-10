@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e16caa5f810e854caf9403aee77d120, type: 3}
   m_Name: DashAbility
   m_EditorClassIdentifier: 
+  sprite: {fileID: 21300000, guid: 7b11d694afce08d47be6f5d5394709dc, type: 3}
+  abilityName: Dash
+  descritption: Press 'shift' to dash in the direction your facing.

@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9091b7f437220544bcff09d9b11a4ce, type: 3}
   m_Name: DoubleJumpAbility
   m_EditorClassIdentifier: 
-  playerMovement: {fileID: 0}
-  playerHealth: {fileID: 0}
-  hudManager: {fileID: 0}
-  spr: {fileID: 21300000, guid: 8b89af089f6c6a048824b494fdcd323e, type: 3}
+  sprite: {fileID: 21300000, guid: 8b89af089f6c6a048824b494fdcd323e, type: 3}
+  abilityName: Double Jump
+  descritption: Jump while in the air.
