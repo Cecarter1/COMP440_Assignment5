@@ -35,6 +35,7 @@ Transform:
   m_Children:
   - {fileID: 451953975388957822}
   - {fileID: 4348136932875074573}
+  - {fileID: 3216436625971558319}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2780570075437925133
@@ -459,4 +460,90 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8579102623346082624, guid: 9355adf4c6a28034cb1060b3b8a17974, type: 3}
   m_PrefabInstance: {fileID: 5429291527839694669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7231434042784333430
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 9064134127092354615}
+    m_Modifications:
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.86666673
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.17254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.minColor.b
+      value: 0.38900003
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.minColor.g
+      value: 0.28814822
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232453735864297891, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: InitialModule.startColor.minColor.r
+      value: 0.043222222
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.004
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.028
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6779605661423676455, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+      propertyPath: m_Name
+      value: Explosion Particle System
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+--- !u!4 &3216436625971558319 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5257990924872747481, guid: bafa1650383e5d14089b80d58704bafa, type: 3}
+  m_PrefabInstance: {fileID: 7231434042784333430}
   m_PrefabAsset: {fileID: 0}

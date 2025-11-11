@@ -8,10 +8,11 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
         if (collision.tag == "Player")
         {
             animator.SetTrigger("Disabled");
+            GameObject.Find("Fire Particle System").GetComponent<ParticleSystem>().Stop();
+            GameObject.Find("Explosion Particle System").GetComponent<ParticleSystem>().Play();
         }
     }
 }

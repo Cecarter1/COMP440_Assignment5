@@ -36,12 +36,13 @@ public class HUDManager : MonoBehaviour
     [Header("Collectible Description")]
     public GameObject collectiblePane;
     public Image collectibleImg;
+    public TMP_Text collectibleName;
     public TMP_Text collectibleDescription;
     public bool descriptionActive = false;
 
     public void Start()
     {
-        //UpdateHealth();
+        UpdateAbilities();
 
         for (int i = 0; i < abilities.Length; i++)
         {
@@ -193,6 +194,7 @@ public class HUDManager : MonoBehaviour
         collectiblePane.SetActive(true);
         descriptionActive = true;
         collectibleImg.sprite = collectible.sprite;
+        collectibleName.text = collectible.abilityName;
         collectibleDescription.text = collectible.descritption;
     }
 }

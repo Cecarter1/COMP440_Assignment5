@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerRespawn : MonoBehaviour
 {
-    private Transform currentCheckpoint;
+    [SerializeField] private Transform currentCheckpoint;
 
     public void Respawn()
     {
