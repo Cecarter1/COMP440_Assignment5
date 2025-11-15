@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public bool canDash = false;
     public bool canGravity = false;// Flag for gravity unlock
     public bool isPowerupActive = false;
-    public bool hasUnlimitedGravity = false; 
+    public bool hasUnlimitedGravity = false;
     public bool canFlipGravity = true; // Control gravity flip cooldown
 
     // NOTE: This should be UNCHECKED in the Inspector for single double jump functionality.
@@ -602,38 +602,64 @@ public class PlayerController : MonoBehaviour
     }
 
     // ---------- Facing / flipping (CRITICAL FIX) ----------
+    // ---------- Facing / flipping (FIXED) ----------
+    // ---------- Facing / flipping (SCREEN-SPACE FIX) ----------
     void UpdateFacing()
     {
         if (!graphicsRoot) return;
 
-        // 1. Preserve the current gravity rotation on the graphicsRoot.
-        Quaternion originalRotation = graphicsRoot.localRotation;
+        float dir = 0f;
 
-        // 2. Temporarily reset rotation to world identity 
-        //    to calculate localScale.x correctly along the screen's horizontal axis.
-        graphicsRoot.localRotation = Quaternion.identity;
+        // 1. Prefer movement direction in screen/camera space
+        Vector2 vel = rb.velocity;
 
-        // 3. Update facing based on raw horizontal input
-        float dirInput = rawMoveScalar;
-        if (Mathf.Abs(dirInput) > 0.05f)
+        if (targetCamera)
         {
-            facing = dirInput > 0f ? 1 : -1;
+            // Camera's "right" direction in world -> 2D
+            Vector3 camRight3 = targetCamera.transform.right;
+            Vector2 camRight2 = new Vector2(camRight3.x, camRight3.y).normalized;
+
+            float vScreenRight = Vector2.Dot(vel, camRight2);
+
+            if (Mathf.Abs(vScreenRight) > 0.05f)
+            {
+                // > 0 → moving towards screen-right, < 0 → screen-left
+                dir = Mathf.Sign(vScreenRight);
+            }
         }
-        else if (IsWallSliding())
+        else
         {
-            if (wallLeft) facing = -1;
-            if (wallRight) facing = 1;
+            // Fallback: use world X if there's no targetCamera
+            if (Mathf.Abs(vel.x) > 0.05f)
+                dir = Mathf.Sign(vel.x);
         }
 
-        // 4. Apply the horizontal flip based on 'facing' sign
+        // 2. If basically not moving, fall back to input
+        if (Mathf.Abs(dir) < 0.5f && Mathf.Abs(rawMoveScalar) > 0.05f)
+        {
+            dir = Mathf.Sign(rawMoveScalar);
+        }
+
+        // 3. If still ambiguous, use wall slide direction
+        if (Mathf.Abs(dir) < 0.5f && IsWallSliding())
+        {
+            if (wallLeft) dir = -1;
+            if (wallRight) dir = 1;
+        }
+
+        // 4. Commit facing if we have a real direction
+        if (Mathf.Abs(dir) > 0.01f)
+        {
+            facing = dir > 0 ? 1 : -1;
+        }
+
+        // 5. Apply flip ONLY via localScale.x, keep rotation from gravity untouched
         var ls = graphicsRoot.localScale;
-        float absX = Mathf.Abs(ls.x);
-        ls.x = facing > 0 ? absX : -absX;
+        float ax = Mathf.Abs(ls.x);
+        ls.x = (facing > 0) ? ax : -ax;
         graphicsRoot.localScale = ls;
-
-        // 5. Restore the gravity rotation
-        graphicsRoot.localRotation = originalRotation;
     }
+
 
     // ---------- Animator (Remains the same) ----------
     void UpdateAnimatorParams()
@@ -709,47 +735,58 @@ public class PlayerController : MonoBehaviour
     }
     IEnumerator SmoothReorient(Vector2 newGravityDir, float duration)
     {
-        gravityDir = newGravityDir;
-        Physics2D.gravity = newGravityDir * gravityMagnitude;
+        // Normalize + store gravity
+        gravityDir = newGravityDir.normalized;
+        Physics2D.gravity = gravityDir * gravityMagnitude;
 
-        // Graphics Rotation Logic (Smooth Slerp)
+        // ---- Rotate graphics to stand "upright" relative to gravity ----
         if (graphicsRoot)
         {
             Quaternion start = graphicsRoot.rotation;
-            Quaternion target = Quaternion.FromToRotation(graphicsRoot.up, -newGravityDir) * graphicsRoot.rotation;
+            // Absolute target: sprite's +Y points opposite gravity
+            Quaternion target = Quaternion.FromToRotation(Vector3.up, -gravityDir);
 
             float t = 0f;
+            duration = Mathf.Max(0.01f, duration);
+
             while (t < duration)
             {
                 t += Time.deltaTime;
-                graphicsRoot.rotation = Quaternion.Slerp(start, target, t / duration);
+                float alpha = t / duration;
+                graphicsRoot.rotation = Quaternion.Slerp(start, target, alpha);
                 yield return null;
             }
+
             graphicsRoot.rotation = target;
         }
 
-        // Camera Rotation Logic (Smooth Slerp)
+        // ---- Camera Rotation Logic (kept similar to your original) ----
         if (targetCamera)
         {
             Quaternion cs = targetCamera.transform.rotation;
-            Quaternion ct = Quaternion.FromToRotation(targetCamera.transform.up, -newGravityDir) * cs;
+            Quaternion ct = Quaternion.FromToRotation(targetCamera.transform.up, -gravityDir) * cs;
 
             float t = 0f;
-            while (t < duration)
+            float d = Mathf.Max(0.01f, duration);
+
+            while (t < d)
             {
                 t += Time.deltaTime;
-                targetCamera.transform.rotation = Quaternion.Slerp(cs, ct, t / duration);
+                float alpha = t / d;
+                targetCamera.transform.rotation = Quaternion.Slerp(cs, ct, alpha);
                 yield return null;
             }
+
             targetCamera.transform.rotation = ct;
         }
 
-        // Reproject velocity
+        // ---- Reproject velocity into the new up/right basis ----
         Vector2 v = rb.velocity;
         float vRight = Vector2.Dot(v, rightAxis);
         float vUp = Vector2.Dot(v, upAxis);
         rb.velocity = vRight * rightAxis + vUp * upAxis;
     }
+
 
     // ---------- Power-Up API (Remains the same) ----------
     public void ApplySpeedMultiplier(float multiplier, float duration)
